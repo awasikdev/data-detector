@@ -8,7 +8,8 @@ const puppeteer = require('puppeteer-core');
 const path = require('path');
 const randomUseragent = require('random-useragent');
 
-const preload = path.resolve(path.join(__dirname, 'src/preload.js'));
+//const preload = path.resolve(path.join(__dirname, 'src/main.js'));
+const preload = path.join(__dirname, './dist/preload.js');
 
 const main = async () => {
   await pie.initialize(app);
@@ -16,7 +17,7 @@ const main = async () => {
   createWindow(app, browser);
 };
 
-async function createWindow(app, browser) {
+async function createWindow(app, browser) { 
   const window = new BrowserWindow({
     webPreferences: {
       webSecurity: false,
@@ -25,7 +26,7 @@ async function createWindow(app, browser) {
       nodeIntegration: true,
       //nodeIntegrationInSubFrames: true,
       enableRemoteModule: true,
-      preload: preload
+     // preload: preload
     },
   });
 
@@ -46,8 +47,15 @@ async function createWindow(app, browser) {
   console.log(userAgent);
 
   window.webContents.setUserAgent(userAgent);
-  window.webContents.loadURL(url);
+//  window.webContents.loadURL(url);
   window.webContents.openDevTools();
+  const page = await pie.getPage(browser, window);
+
+  await page.goto('https://www.wykop.pl/mikroblog', {
+    waitUntil: 'domcontentloaded',
+  });
+
+  await page.addScriptTag({ path: preload });
 
   ipcMain.on('elementSelected', (event, arg) => {
     console.log('name inside main process is: ', arg); 

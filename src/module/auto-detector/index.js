@@ -3,10 +3,6 @@ const DOMHelper = require('../../service/DOMHelper');
 const plugin = function (event) {
   console.log('DOMContentLoaded');
 
-  const visibleElementsWithText = Array.from(
-    document.body.querySelectorAll('*'),
-  ).filter((el) => DOMHelper.visibleAndHasTextNode(el, true));
-
   const children1 = getChildren(document.body, 1);
   console.log(children1);
 
@@ -22,6 +18,7 @@ const plugin = function (event) {
   });
   console.log(elementsWithText);
 
+  let id = 0;
   elements.forEach((el) => {
     const xpath = DOMHelper.createXPathFromElement(el);
 
@@ -29,7 +26,13 @@ const plugin = function (event) {
       DOMHelper.visibleAndHasTextNode(v, true),
     );
 
-    elementsWithText.forEach((el) => (el.style.backgroundColor = '#cfe1ff'));
+    id = id + 1;
+    let id2 = 0;
+    elementsWithText.forEach((elt) =>  {
+        id2 = id2 + 1;
+        elt.style.backgroundColor = '#cfe1ff';
+        elt.dataset.test = id + '-' + id2;
+    });
   });
 
   const xPaths = DOMHelper.visibleElementsWithText.map((el) => {
